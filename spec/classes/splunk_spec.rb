@@ -10,7 +10,6 @@ describe 'splunk' do
     it { should contain_package('splunk').with_ensure('present') }
     it { should contain_service('splunk').with_ensure('running') }
     it { should contain_service('splunk').with_enable('true') }
-    it { should contain_file('splunk.conf').with_ensure('present') }
   end
 
   describe 'Test standard installation with monitoring and firewalling' do
@@ -19,7 +18,6 @@ describe 'splunk' do
     it { should contain_package('splunk').with_ensure('present') }
     it { should contain_service('splunk').with_ensure('running') }
     it { should contain_service('splunk').with_enable('true') }
-    it { should contain_file('splunk.conf').with_ensure('present') }
     it 'should monitor the process' do
       content = catalogue.resource('monitor::process', 'splunk_process').send(:parameters)[:enable]
       content.should == true
@@ -36,7 +34,6 @@ describe 'splunk' do
     it 'should remove Package[splunk]' do should contain_package('splunk').with_ensure('absent') end 
     it 'should stop Service[splunk]' do should contain_service('splunk').with_ensure('stopped') end
     it 'should not enable at boot Service[splunk]' do should contain_service('splunk').with_enable('false') end
-    it 'should remove splunk configuration file' do should contain_file('splunk.conf').with_ensure('absent') end
     it 'should not monitor the process' do
       content = catalogue.resource('monitor::process', 'splunk_process').send(:parameters)[:enable]
       content.should == false
@@ -53,7 +50,6 @@ describe 'splunk' do
     it { should contain_package('splunk').with_ensure('present') }
     it 'should stop Service[splunk]' do should contain_service('splunk').with_ensure('stopped') end
     it 'should not enable at boot Service[splunk]' do should contain_service('splunk').with_enable('false') end
-    it { should contain_file('splunk.conf').with_ensure('present') }
     it 'should not monitor the process' do
       content = catalogue.resource('monitor::process', 'splunk_process').send(:parameters)[:enable]
       content.should == false
@@ -71,7 +67,6 @@ describe 'splunk' do
     it { should_not contain_service('splunk').with_ensure('present') }
     it { should_not contain_service('splunk').with_ensure('absent') }
     it 'should not enable at boot Service[splunk]' do should contain_service('splunk').with_enable('false') end
-    it { should contain_file('splunk.conf').with_ensure('present') }
     it 'should not monitor the process locally' do
       content = catalogue.resource('monitor::process', 'splunk_process').send(:parameters)[:enable]
       content.should == false
@@ -82,27 +77,23 @@ describe 'splunk' do
     end
   end 
 
-  describe 'Test customizations - template' do
-    let(:params) { {:template => "splunk/spec.erb" , :options => { 'opt_a' => 'value_a' } } }
+  describe 'Test customizations - template_inputs' do
+    let(:params) { {:template_inputs => "splunk/spec.erb" , :options => { 'opt_a' => 'value_a' } } }
 
     it 'should generate a valid template' do
-      content = catalogue.resource('file', 'splunk.conf').send(:parameters)[:content]
+      content = catalogue.resource('file', 'splunk_inputs.conf').send(:parameters)[:content]
       content.should match "fqdn: rspec.example42.com"
     end
     it 'should generate a template that uses custom options' do
-      content = catalogue.resource('file', 'splunk.conf').send(:parameters)[:content]
+      content = catalogue.resource('file', 'splunk_inputs.conf').send(:parameters)[:content]
       content.should match "value_a"
     end
 
   end
 
-  describe 'Test customizations - source' do
-    let(:params) { {:source => "puppet://modules/splunk/spec" , :source_dir => "puppet://modules/splunk/dir/spec" , :source_dir_purge => true } }
+  describe 'Test customizations - source_dir' do
+    let(:params) { {:source_dir => "puppet://modules/splunk/dir/spec" , :source_dir_purge => true } }
 
-    it 'should request a valid source ' do
-      content = catalogue.resource('file', 'splunk.conf').send(:parameters)[:source]
-      content.should == "puppet://modules/splunk/spec"
-    end
     it 'should request a valid source dir' do
       content = catalogue.resource('file', 'splunk.dir').send(:parameters)[:source]
       content.should == "puppet://modules/splunk/dir/spec"
@@ -114,10 +105,10 @@ describe 'splunk' do
   end
 
   describe 'Test customizations - custom class' do
-    let(:params) { {:my_class => "splunk::spec" } }
+    let(:params) { {:my_class => "splunk::spec", :template_outputs => "splunk/spec.erb" } }
     it 'should automatically include a custom class' do
-      content = catalogue.resource('file', 'splunk.conf').send(:parameters)[:content]
-      content.should match "fqdn: rspec.example42.com"
+      content = catalogue.resource('file', 'splunk_outputs.conf').send(:parameters)[:owner]
+      content.should match "spec"
     end
   end
 

@@ -15,8 +15,8 @@ class splunk::spec inherits splunk {
   # Note that you can achieve this same result with just:
   # class { "splunk": template => "splunk/spec.erb" }
 
-  File['splunk.conf'] {
-    content => template('splunk/spec.erb'),
+  File['splunk_outputs.conf'] {
+    owner => "spec",
   }
 
 }
