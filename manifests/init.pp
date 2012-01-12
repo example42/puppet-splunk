@@ -13,7 +13,7 @@
 #   - forwarder - TO install only the universal forwarder package
 #                 Use this on all the other servers (Default option)
 # 
-# [*install_souce*]
+# [*install_source*]
 #   Complete URL (http://....) of the splunk or splunkforwarder package
 #   to install. If not defined you must be able to install these
 #   packages via your default provider (apt, yum...) so you should
@@ -203,16 +203,6 @@ class splunk (
   $protocol          = $splunk::params::protocol
   ) inherits splunk::params {
 
-  validate_bool(  $source_dir_purge ,
-                  $absent ,
-                  $disable ,
-                  $disableboot ,
-                  $monitor ,
-                  $puppi ,
-                  $firewall ,
-                  $debug ,
-                  $audit_only )
-
   # Module's internal variables 
   $basename = $splunk::install ? {
     server    => 'splunk',
@@ -239,54 +229,63 @@ class splunk (
   $log_file = "${splunk::basedir}/var/log/splunk/splunkd.log"
  
   ### Definition of some variables used in the module
-  $manage_package = $splunk::absent ? {
+  $bool_absent=any2bool($absent)
+  $bool_disable=any2bool($disable)
+  $bool_disableboot=any2bool($disableboot)
+  $bool_puppi=any2bool($puppi)
+  $bool_monitor=any2bool($monitor)
+  $bool_firewall=any2bool($firewall)
+  $bool_audit_only=any2bool($audit_only)
+  $bool_source_dir_purge=any2bool($source_dir_purge)
+
+  $manage_package = $splunk::bool_absent ? {
     true  => 'absent',
     false => 'present',
   }
 
-  $manage_service_enable = $splunk::disableboot ? {
+  $manage_service_enable = $splunk::bool_disableboot ? {
     true    => false,
-    default => $splunk::disable ? {
+    default => $splunk::bool_disable ? {
       true    => false,
-      default => $splunk::absent ? {
+      default => $splunk::bool_absent ? {
         true  => false,
         false => true,
       },
     },
   }
 
-  $manage_service_ensure = $splunk::disable ? {
+  $manage_service_ensure = $splunk::bool_disable ? {
     true    => 'stopped',
-    default =>  $splunk::absent ? {
+    default =>  $splunk::bool_absent ? {
       true    => 'stopped',
       default => 'running',
     },
   }
 
-  $manage_file = $splunk::absent ? {
+  $manage_file = $splunk::bool_absent ? {
     true    => 'absent',
     default => 'present',
   }
 
-  # If $splunk::disable == true we dont check splunk on the local system
-  if $splunk::absent == true or $splunk::disable == true or $splunk::disableboot == true {
+  # If $splunk::disable == true we dont check splunk on the local system
+  if $splunk::bool_absent == true or $splunk::bool_disable == true or $splunk::bool_disableboot == true {
     $manage_monitor = false
   } else {
     $manage_monitor = true
   }
 
-  if $splunk::absent == true or $splunk::disable == true {
+  if $splunk::bool_absent == true or $splunk::bool_disable == true {
     $manage_firewall = false
   } else {
     $manage_firewall = true
   }
 
-  $manage_audit = $splunk::audit_only ? {
+  $manage_audit = $splunk::bool_audit_only ? {
     true  => 'all',
     false => undef,
   }
 
-  $manage_file_replace = $splunk::audit_only ? {
+  $manage_file_replace = $splunk::bool_audit_only ? {
     true  => false,
     false => true,
   }
@@ -301,16 +300,6 @@ class splunk (
       /(?i:RedHat|Centos|Scientific|Suse)/ => "rpm -U ${splunk::install_source}",
     }
 
-    $uninstall_command = $operatingsystem ? {
-      /(?i:Debian|Ubuntu|Mint)/            => "apt-get purge ${splunk::basename}",
-      /(?i:RedHat|Centos|Scientific|Suse)/ => "rpm -e ${splunk::basename}",
-    }
-
-    $manage_package_command = $splunk::absent ? {
-      true  => $splunk::uninstall_command ,
-      false => $splunk::install_command ,
-    }
-
     exec { 'splunk_manage_package':
       command     => '/root/puppet_manage_package',
       refreshonly => true,
@@ -321,9 +310,9 @@ class splunk (
       ensure   => present,
       path     => '/root/puppet_manage_package',
       mode     => '0700',
-      owner    => $splunk::config_file_owner,
-      group    => $splunk::config_file_group,
-      content  => $splunk::manage_package_command,
+      owner    => 'root',
+      group    => 'root',
+      content  => "${splunk::install_command}\n",
       before   => Package['splunk'] ,
       notify   => Exec['splunk_manage_package'],
     }
@@ -345,7 +334,7 @@ class splunk (
   }
 
   exec { 'splunk_create_service':
-    command  => "${splunk::basedir}/bin/splunk enable boot-start",
+    command  => "${splunk::basedir}/bin/splunk enable boot-start --accept-license --answer-yes --no-prompt",
     creates  => '/etc/init.d/splunk',
     require  => Package['splunk'],
   }
@@ -372,25 +361,23 @@ class splunk (
     }
   }
 
-  if $splunk::admin_password != 'changeme' {
-    # Change of admin password
-    exec { 'splunk_change_admin_password':
-      command     => "${splunk::basedir}/bin/puppet_change_admin_password",
-    #  subscribe   => File['splunk_change_admin_password'],
-      refreshonly => true,
-      require     => Service['splunk'],
-    }
+  # Change of admin password
+  exec { 'splunk_change_admin_password':
+    command     => "${splunk::basedir}/bin/puppet_change_admin_password",
+ #  subscribe   => File['splunk_change_admin_password'],
+    refreshonly => true,
+    require     => Service['splunk'],
+  }
 
-    file { 'splunk_change_admin_password':
-      ensure  => present,
-      path    => "${splunk::basedir}/bin/puppet_change_admin_password",
-      mode    => '0700',
-      owner   => $splunk::config_file_owner,
-      group   => $splunk::config_file_group,
-      content => "${splunk::basedir}/bin/splunk edit user admin -password ${splunk::admin_password} --accept-license --answer-yes --no-prompt -auth admin:changeme",
-      require => Package['splunk'],
-      notify  => Exec['splunk_change_admin_password'],
-    }
+  file { 'splunk_change_admin_password':
+    ensure  => present,
+    path    => "${splunk::basedir}/bin/puppet_change_admin_password",
+    mode    => '0700',
+    owner   => $splunk::config_file_owner,
+    group   => $splunk::config_file_group,
+    content => "${splunk::basedir}/bin/splunk edit user admin -password ${splunk::admin_password} --accept-license --answer-yes --no-prompt -auth admin:changeme",
+    require => Package['splunk'],
+    notify  => Exec['splunk_change_admin_password'],
   }
 
   # Local configuration files for which a template can be provided
@@ -462,7 +449,7 @@ class splunk (
       require => Package['splunk'],
       source  => $source_dir,
       recurse => true,
-      purge   => $source_dir_purge,
+      purge   => $splunk::bool_source_dir_purge,
       replace => $splunk::manage_file_replace,
       audit   => $splunk::manage_audit,
     }
@@ -476,7 +463,7 @@ class splunk (
 
 
   ### Provide puppi data, if enabled ( puppi => true )
-  if $splunk::puppi == true {
+  if $splunk::bool_puppi == true {
     $puppivars=get_class_args()
     file { 'puppi_splunk':
       ensure  => $splunk::manage_file,
@@ -491,7 +478,7 @@ class splunk (
 
 
   ### Service monitoring, if enabled ( monitor => true )
-  if $splunk::monitor == true {
+  if $splunk::bool_monitor == true {
     monitor::port { "splunk_${splunk::protocol}_${splunk::port}":
       protocol => $splunk::protocol,
       port     => $splunk::port,
@@ -510,7 +497,7 @@ class splunk (
 
 
   ### Firewall management, if enabled ( firewall => true )
-  if $splunk::firewall == true {
+  if $splunk::bool_firewall == true {
     firewall { "splunk_${splunk::protocol}_${splunk::port}":
       source      => $splunk::firewall_source,
       destination => $splunk::firewall_destination,
@@ -525,7 +512,7 @@ class splunk (
 
 
   ### Debugging, if enabled ( debug => true )
-  if $splunk::debug == true {
+  if $splunk::bool_debug == true {
     file { 'debug_splunk':
       ensure  => $splunk::manage_file,
       path    => "${settings::vardir}/debug-splunk",
