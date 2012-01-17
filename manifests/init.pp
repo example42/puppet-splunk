@@ -24,9 +24,14 @@
 #   interface. Default is "changeme"
 #
 # [*forward_server*]  
-#   The central server(s) to forward messgaes to. MUST be in host:port format
+#   The central server(s) to forward messages to. MUST be in host:port format
 #   If you want to forward to more than one servers, use an array.
 #   Example: [ "splunk1.example42.com:9997" , "splunk2.example42.com:9997" ] 
+#
+# [*monitor_path*]
+#   The path of files or directories that you want to monitor with Splunk
+#   Either on the central server or the forwarders. May be an array.
+#   Example: [ "/var/log/tomcat6/catalina.out" , "/var/log/apache2" ]
 # 
 # [*template_inputs*]
 #   A custom template to use for a custom etc/system/local/inputs.conf file
@@ -177,6 +182,7 @@ class splunk (
   $install_source    = $splunk::params::install_source,
   $admin_password    = $splunk::params::admin_password,
   $forward_server    = $splunk::params::forward_server,
+  $monitor_path      = $splunk::params::monitor_path,
   $template_inputs   = $splunk::params::template_inputs,
   $template_outputs  = $splunk::params::template_outputs,
   $template_server   = $splunk::params::template_server,
@@ -339,12 +345,10 @@ class splunk (
     require  => Package['splunk'],
   }
 
+  # Setting of forward_server for forwarders
   if $splunk::forward_server {
-    # Setting of forward_server for forwarders
     exec { 'splunk_add_forward_server':
       command     => "${splunk::basedir}/bin/puppet_add_forward_server",
-    #  subscribe   => File['splunk_add_forward_server'],
-    #  notify      => Service['splunk'],
       refreshonly => true,
       require     => Exec['splunk_change_admin_password'],
     }
@@ -355,16 +359,35 @@ class splunk (
       mode     => '0700',
       owner    => $splunk::config_file_owner,
       group    => $splunk::config_file_group,    
-      content  => "${splunk::basedir}/bin/splunk add forward-server ${splunk::forward_server} --accept-license --answer-yes --auto-ports --no-prompt -auth admin:${splunk::admin_password}",
+      content  => template('splunk/add_forward_server.erb'),
       require  => Package['splunk'],
       notify   => Exec['splunk_add_forward_server'],
+    }
+  }
+
+  # Setting of files or directories to be monitored
+  if $splunk::monitor_path {
+    exec { 'splunk_add_monitor':
+      command     => "${splunk::basedir}/bin/puppet_add_monitor",
+      refreshonly => true,
+      require     => Exec['splunk_change_admin_password'],
+    }
+
+    file { 'splunk_add_monitor':
+      ensure   => present,
+      path     => "${splunk::basedir}/bin/puppet_add_monitor",
+      mode     => '0700',
+      owner    => $splunk::config_file_owner,
+      group    => $splunk::config_file_group,
+      content  => template('splunk/add_monitor.erb'),
+      require  => Package['splunk'],
+      notify   => Exec['splunk_add_monitor'],
     }
   }
 
   # Change of admin password
   exec { 'splunk_change_admin_password':
     command     => "${splunk::basedir}/bin/puppet_change_admin_password",
- #  subscribe   => File['splunk_change_admin_password'],
     refreshonly => true,
     require     => Service['splunk'],
   }

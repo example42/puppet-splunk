@@ -13,7 +13,7 @@ This module installs splunk server or splunk universal forwarder.
 It uses packages that can be retrieved from http://www.splunk.com.
 It has been tested on version 4.3 but should work also on earlier releases.
 
-Note that you have to specify a package_source if if you don't have the relevant
+Note that you have to specify a package_source if you don't have the relevant
 packages in your repo(s).
 
 To install Splunk server (searcher, indexer, web interface) via yum/apt:
@@ -22,7 +22,7 @@ To install Splunk server (searcher, indexer, web interface) via yum/apt:
           install => "server",
         }
 
-To install Universal Forwarder vi yum/apt:
+To install Universal Forwarder via yum/apt:
 
         class { "splunk":
           install        => "forwarder", # This is the default, can be omitted 
@@ -37,12 +37,14 @@ To install the Splunk server form a custom url
           admin_password => "mypassword",
         }
 
-To install the Universal Forwarder from a custom url and setting ad admin password:
+To install the Universal Forwarder from a custom url, setting an admin password and custom
+local files to forward:
 
         class { "splunk":
           # install        => "forwarder", # This is the default, can be omitted 
           install_source => "http://files.example42.com/splunkforwarder-4.3-115073-linux-2.6-amd64.deb",
           forward_server => "splunk.example42.com:9997", # Use host:port format
+          monitor_path   => [ "/var/log/tomcat6/catalina.out" , "/var/log/apache2/" ],
           admin_password => "!what4wONDErFu!P4ssw0rd",
         }
 

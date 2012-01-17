@@ -35,6 +35,11 @@ class splunk::params {
     default => $::splunk_forward_server,
   }
 
+  $monitor_path = $::splunk_monitor_path ? {
+    ''      => '',                        # Default value
+    default => $::splunk_monitor_path,
+  }
+
   $template_inputs = $::splunk_template_inputs ? {
     ''      => '',                        # Default value
     default => $::splunk_template_inputs,
