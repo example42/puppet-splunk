@@ -1,0 +1,10 @@
+#!/bin/sh
+# File Managed by Puppet
+
+# Adding forward servers
+<% forward_server.each do |fs| -%>
+<%= scope.lookupvar('splunk::basedir') %>/bin/splunk add forward-server <%= fs %> --accept-license --answer-yes --auto-ports --no-prompt -auth admin:<%= scope.lookupvar('splunk::admin_password') %>
+<% end -%>
+
+# Service restart (done here to skip Puppet dependencies hell)
+/etc/init.d/splunk restart

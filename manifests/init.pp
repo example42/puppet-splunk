@@ -318,7 +318,7 @@ class splunk (
       mode     => '0700',
       owner    => 'root',
       group    => 'root',
-      content  => "${splunk::install_command}\n",
+      content  => template('splunk/manage_package.erb'),
       before   => Package['splunk'] ,
       notify   => Exec['splunk_manage_package'],
     }
@@ -398,7 +398,7 @@ class splunk (
     mode    => '0700',
     owner   => $splunk::config_file_owner,
     group   => $splunk::config_file_group,
-    content => "${splunk::basedir}/bin/splunk edit user admin -password ${splunk::admin_password} --accept-license --answer-yes --no-prompt -auth admin:changeme",
+    content => template('splunk/change_admin_password.erb'),
     require => Package['splunk'],
     notify  => Exec['splunk_change_admin_password'],
   }

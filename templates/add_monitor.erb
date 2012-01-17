@@ -1,0 +1,13 @@
+#!/bin/sh
+# File Managed by Puppet
+
+# Removing existing paths
+for a in $(<%= scope.lookupvar('splunk::basedir') %>/bin/splunk list monitor -auth admin:<%= scope.lookupvar('splunk::admin_password') %> | fgrep -v -i splunk | fgrep "/") ; do
+<%= scope.lookupvar('splunk::basedir') %>/bin/splunk remove monitor $a
+done 
+
+# Adding paths
+<% monitor_path.each do |mon| -%>
+<%= scope.lookupvar('splunk::basedir') %>/bin/splunk add monitor <%= mon %> --accept-license --answer-yes --no-prompt -auth admin:<%= scope.lookupvar('splunk::admin_password') %>
+<% end -%>
+
