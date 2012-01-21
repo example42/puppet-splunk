@@ -4,15 +4,15 @@
 #
 #
 # == Parameters
-# 
+#
 # Specific class parameters
 # [*install*]
 #   Splunk install type:
 #   - server - For complete installation (seacher, indexer...).
-#              Use this on central server 
+#              Use this on central server
 #   - forwarder - TO install only the universal forwarder package
 #                 Use this on all the other servers (Default option)
-# 
+#
 # [*install_source*]
 #   Complete URL (http://....) of the splunk or splunkforwarder package
 #   to install. If not defined you must be able to install these
@@ -23,34 +23,34 @@
 #   Splunk admin password both for the forwarder management and the splunk web
 #   interface. Default is "changeme"
 #
-# [*forward_server*]  
+# [*forward_server*]
 #   The central server(s) to forward messages to. MUST be in host:port format
 #   If you want to forward to more than one servers, use an array.
-#   Example: [ "splunk1.example42.com:9997" , "splunk2.example42.com:9997" ] 
+#   Example: [ "splunk1.example42.com:9997" , "splunk2.example42.com:9997" ]
 #
 # [*monitor_path*]
 #   The path of files or directories that you want to monitor with Splunk
 #   Either on the central server or the forwarders. May be an array.
 #   Example: [ "/var/log/tomcat6/catalina.out" , "/var/log/apache2" ]
-# 
+#
 # [*template_inputs*]
 #   A custom template to use for a custom etc/system/local/inputs.conf file
 #   The value is used in: content => template($template_inputs),
 #   Note that splunk generates autonomously this file, overwrite if you know
 #   what you're doing.
-# 
+#
 # [*template_outputs*]
 #   A custom template to use for a custom etc/system/local/outputs.conf file
 #   The value is used in: content => template($template_outputs),
 #   Note that splunk generates autonomously this file and on the forwarder
 #   this is populated with the value of forward_server
-# 
+#
 # [*template_server*]
 #   A custom template to use for a custom etc/system/local/server.conf file
 #   The value is used in: content => template($template_server),
 #   Note that splunk generates autonomously this file, overwrite if you know
 #   what you're doing.
-# 
+#
 # [*template_web*]
 #   A custom template to use for a custom etc/system/local/web.conf file
 #   The value is used in: content => template($template_web),
@@ -209,7 +209,7 @@ class splunk (
   $protocol          = $splunk::params::protocol
   ) inherits splunk::params {
 
-  # Module's internal variables 
+  # Module's internal variables
   $basename = $splunk::install ? {
     server    => 'splunk',
     forwarder => 'splunkforwarder',
@@ -233,7 +233,7 @@ class splunk (
   $data_dir = "${splunk::basedir}/var/lib/splunk"
   $log_dir = "${splunk::basedir}/var/log/splunk"
   $log_file = "${splunk::basedir}/var/log/splunk/splunkd.log"
- 
+
   ### Definition of some variables used in the module
   $bool_absent=any2bool($absent)
   $bool_disable=any2bool($disable)
@@ -301,7 +301,7 @@ class splunk (
   # If install_source is defined installation is done retriving directly the defined source
   if $splunk::install_source != '' {
 
-    $install_command = $operatingsystem ? {
+    $install_command = $::operatingsystem ? {
       /(?i:Debian|Ubuntu|Mint)/            => "wget ${splunk::install_source} -O /tmp/splunk.deb ; dpkg -i /tmp/splunk.deb",
       /(?i:RedHat|Centos|Scientific|Suse)/ => "rpm -U ${splunk::install_source}",
     }
@@ -358,7 +358,7 @@ class splunk (
       path     => "${splunk::basedir}/bin/puppet_add_forward_server",
       mode     => '0700',
       owner    => $splunk::config_file_owner,
-      group    => $splunk::config_file_group,    
+      group    => $splunk::config_file_group,
       content  => template('splunk/add_forward_server.erb'),
       require  => Package['splunk'],
       notify   => Exec['splunk_add_forward_server'],
