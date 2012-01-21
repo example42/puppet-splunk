@@ -64,7 +64,7 @@
 #   Can be defined also by the (top scope) variable $splunk_myclass
 #
 # [*source_dir*]
-#   If defined, the whole splunk configuration direrctory content is retrieved
+#   If defined, the whole splunk configuration directory content is retrieved
 #   recursively from the specified source
 #   (source => $source_dir , recurse => true)
 #   Can be defined also by the (top scope) variable $splunk_source_dir
