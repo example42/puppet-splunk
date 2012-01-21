@@ -1,4 +1,4 @@
-# Class: splunk
+# = Class: splunk
 #
 # This is the main splunk class
 #
@@ -26,7 +26,7 @@
 # [*forward_server*]  
 #   The central server(s) to forward messages to. MUST be in host:port format
 #   If you want to forward to more than one servers, use an array.
-#   Example: [ "splunk1.example42.com:9997" , "splunk2.example42.com:9997" ] 
+#   Example: [ "splunk1.example42.com:9997" , "splunk2.example42.com:9997" ] 
 #
 # [*monitor_path*]
 #   The path of files or directories that you want to monitor with Splunk

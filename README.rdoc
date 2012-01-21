@@ -139,7 +139,7 @@ Also for this case existing configuration might be overwritten
 
         class { "splunk":
           source_dir       => "puppet:///modules/example42/splunk/conf/",
-          source_dir_purge => false, # Set to true to purge any existing file not present in $source_dir
+          source_dir_purge => false, # Set to true to purge any existing file not present in $source_dir
         }
 
 * Define custom options that can be used in the custom templates without the
