@@ -115,11 +115,9 @@ describe 'splunk' do
   describe 'Test Puppi Integration' do
     let(:params) { {:puppi => true, :puppi_helper => "myhelper"} }
 
-    it { should contain_file('puppi_splunk').with_ensure('present') }
-    it 'should generate a valid puppi data file' do
-      content = catalogue.resource('file', 'puppi_splunk').send(:parameters)[:content]
-      expected_lines = [ '  puppi_helper: myhelper' ]
-      (content.split("\n") & expected_lines).should == expected_lines
+    it 'should generate a puppi::ze define' do
+      content = catalogue.resource('puppi::ze', 'splunk').send(:parameters)[:helper]
+      content.should == "myhelper"
     end
   end
 
@@ -153,7 +151,8 @@ describe 'splunk' do
       content.should == "iptables"
     end
     it 'should generate puppi resources ' do 
-      should contain_file('puppi_splunk').with_ensure('present') 
+      content = catalogue.resource('puppi::ze', 'splunk').send(:parameters)[:ensure]
+      content.should == "present"
     end
   end
 
