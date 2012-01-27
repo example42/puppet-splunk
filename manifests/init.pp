@@ -487,15 +487,11 @@ class splunk (
 
   ### Provide puppi data, if enabled ( puppi => true )
   if $splunk::bool_puppi == true {
-    $puppivars=get_class_args()
-    file { 'puppi_splunk':
-      ensure  => $splunk::manage_file,
-      path    => "${settings::vardir}/puppi/splunk",
-      mode    => '0644',
-      owner   => 'root',
-      group   => 'root',
-      require => Class['puppi'],
-      content => inline_template('<%= puppivars.to_yaml %>'),
+    $classvars=get_class_args()
+    puppi::ze { 'openssh':
+      ensure    => $splunk::manage_file,
+      variables => $classvars,
+      helper    => $splunk::puppi_helper,
     }
   }
 
