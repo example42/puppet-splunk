@@ -488,7 +488,7 @@ class splunk (
   ### Provide puppi data, if enabled ( puppi => true )
   if $splunk::bool_puppi == true {
     $classvars=get_class_args()
-    puppi::ze { 'openssh':
+    puppi::ze { 'splunk':
       ensure    => $splunk::manage_file,
       variables => $classvars,
       helper    => $splunk::puppi_helper,
