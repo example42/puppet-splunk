@@ -518,8 +518,8 @@ class splunk (
   ### Firewall management, if enabled ( firewall => true )
   if $splunk::bool_firewall == true {
     firewall { "splunk_${splunk::protocol}_${splunk::port}":
-      source      => $splunk::firewall_source,
-      destination => $splunk::firewall_destination,
+      source      => $splunk::firewall_src,
+      destination => $splunk::firewall_dst,
       protocol    => $splunk::protocol,
       port        => $splunk::port,
       action      => 'allow',
