@@ -302,7 +302,7 @@ class splunk (
   if $splunk::install_source != '' {
 
     $install_command = $::operatingsystem ? {
-      /(?i:Debian|Ubuntu|Mint)/            => "wget ${splunk::install_source} -O /tmp/splunk.deb ; dpkg -i /tmp/splunk.deb",
+      /(?i:Debian|Ubuntu|Mint)/            => "wget \'${splunk::install_source}\' -O /tmp/splunk.deb ; dpkg -i /tmp/splunk.deb",
       /(?i:RedHat|Centos|Scientific|Suse)/ => "rpm -U ${splunk::install_source}",
     }
 
