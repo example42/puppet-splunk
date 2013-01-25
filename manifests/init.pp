@@ -243,6 +243,7 @@ class splunk (
   $bool_firewall=any2bool($firewall)
   $bool_audit_only=any2bool($audit_only)
   $bool_source_dir_purge=any2bool($source_dir_purge)
+  $bool_debug=any2bool($debug)
 
   $manage_package = $splunk::bool_absent ? {
     true  => 'absent',
