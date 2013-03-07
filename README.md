@@ -1,4 +1,4 @@
-== Puppet module: splunk
+## Puppet module: splunk
 
 This is a Puppet splunk module from the second generation of Example42 Puppet Modules.
 
@@ -8,7 +8,7 @@ Released under the terms of Apache 2 License.
 
 Check Modulefile for dependencies.
 
-=== GENERAL USAGE
+##= GENERAL USAGE
 This module installs splunk server or splunk universal forwarder.
 It uses packages that can be retrieved from http://www.splunk.com.
 It has been tested on version 4.3 but should work also on earlier releases.
@@ -90,7 +90,7 @@ The examples use parametrized classes, but for all the parameters you can set a 
 
 For example, the variable "$splunk_absent" is equivant to the "absent =>" parameter.
 
-=== USAGE - Basic management
+##= USAGE - Basic management
 * Install splunk with default settings
 
         class { "splunk": }
@@ -120,7 +120,7 @@ For example, the variable "$splunk_absent" is equivant to the "absent =>" parame
         }
 
 
-=== USAGE - Overrides and Customizations
+##= USAGE - Overrides and Customizations
 * You can set custom sources for some commonly used splunk configuration files
 Note that if you do this, the omonimous existing files ( in $splunkdir/etc/system/local ) are 
 removed. So, for example, the name of the forward server set with $forward_server is ignored
@@ -160,7 +160,7 @@ Also for this case existing configuration might be overwritten
         }
 
 
-=== USAGE - Example42 extensions management 
+##= USAGE - Example42 extensions management 
 * Activate puppi (recommended, but disabled by default)
   Note that this option requires the usage of Example42 puppi module
 
