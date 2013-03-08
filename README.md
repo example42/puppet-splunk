@@ -195,3 +195,5 @@ Also for this case existing configuration might be overwritten
         }
 
 
+
+[![Build Status](https://travis-ci.org/example42/puppet-splunk.png?branch=master)](https://travis-ci.org/example42/puppet-splunk)
