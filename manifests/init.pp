@@ -206,7 +206,7 @@ class splunk (
   $debug             = params_lookup( 'debug' , 'global' ),
   $audit_only        = params_lookup( 'audit_only' , 'global' ),
   $port              = params_lookup('port'),
-  $protocol          = params_lookup('protocol'),
+  $protocol          = params_lookup('protocol')
   ) inherits splunk::params {
 
   # Module's internal variables
