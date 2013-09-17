@@ -1,0 +1,14 @@
+[tcp://<%= $remote_server %>:<%= $port %>]
+<% if @host %>  host=<%= @host %>
+<% end %><% if @index %>    index=<%= @index %>
+<% end %><% if @source %>   source=<%= @source %>
+<% end %><% if @sourcetype %>   sourcetype=<%= @sourcetype %>
+<% end %><% if @queue %>    queue=<%= @queue %>
+<% end %><% if @connection_host %>    connection_host=<%= @connection_host %>
+<% end %><% if @queueSize %>    queueSize=<%= @queueSize %>
+<% end %><% if @persistentQueueSize %>    persistentQueueSize=<%= @persistentQueueSize %>
+<% end %><% if @requireHeader %>    requireHeader=<%= @requireHeader %>
+<% end %><% if @listenOnIPv6 %>    listenOnIPv6=<%= @listenOnIPv6 %>
+<% end %><% if @acceptFrom %>    acceptFrom=<%= @acceptFrom %>
+<% end %><% if @rawTcpDoneTimeout %>    rawTcpDoneTimeout=<%= @rawTcpDoneTimeout %>
+<% end %>

@@ -1,0 +1,21 @@
+<% @path.each do |p| %>[monitor://<%= p %>]
+<% if @host %>  host=<%= @host %>
+<% end %><% if @index %>    index=<%= @index %>
+<% end %><% if @source %>   source=<%= @source %>
+<% end %><% if @sourcetype %>   sourcetype=<%= @sourcetype %>
+<% end %><% if @queue %>    queue=<%= @queue %>
+<% end %><% if @host_regex %>   host_regex=<%= @host_regex %>
+<% end %><% if @host_segment %> host_segement=<%= @host_segment %>
+<% end %><% if @whitelist %>    whitelist=<%= @whitelist%>
+<% end %><% if @blacklist %>    blacklist=<%= @blacklist %>
+<% end %><% if @crcSalt %>  crcSalt=<%= @crcSalt %>
+<% end %><% if @initCrcLength %>    initCrcLength=<%= @initCrcLength %>
+<% end %><% if @ignoreOlderThan %>  ignoreOlderThan=<%= @ignoreOlderThan %>
+<% end %><% if @followTail %>   followTail=<%= @followTail %>
+<% end %><% if @alwaysOpenFile %>   alwaysOpenFile=<%= @alwaysOpenFile %>
+<% end %><% if @time_before_close %>    time_before_close=<%= @time_before_close %>
+<% end %><% if @recursive %>    recursive=<%= @recursive %>
+<% end %><% if @followSymlink %>    followSymlink=<%= @followSymlink %>
+<% end %>
+<% end %>
+
