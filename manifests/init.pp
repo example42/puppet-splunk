@@ -547,5 +547,4 @@ class splunk (
     path => "${splunk::basedir}/etc/system/local/inputs.conf",
     notify => Service['splunk']
   }
-
 }
