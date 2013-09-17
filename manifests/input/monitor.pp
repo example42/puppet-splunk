@@ -19,6 +19,8 @@ define splunk::monitor ( $path,
 ) {
 
     include splunk
+
+    realize Concat['inputs.conf']
     concat::fragment { "monitor-$title":
         target => 'inputs.conf',
         content => template( 'splunk/input.fragment.erb' )

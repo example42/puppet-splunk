@@ -1,4 +1,4 @@
-define splunk::input::monitor ( $port,
+define splunk::input::tcp ( $port,
         $remote_server       = "", 
         $host                = undef,
         $index               = undef,
@@ -15,6 +15,8 @@ define splunk::input::monitor ( $port,
 ) {
 
     include splunk
+
+    realize Concat['inputs.conf']
     concat::fragment { "tcp-$title":
         target => 'inputs.conf',
         content => template( 'splunk/input/tcp.erb' )

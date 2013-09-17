@@ -543,8 +543,8 @@ class splunk (
     }
   }
 
-  concat { 'input.conf':
-    path => "${splunk::basedir}/etc/system/local/input.conf",
+  @concat { 'inputs.conf':
+    path => "${splunk::basedir}/etc/system/local/inputs.conf",
     notify => Service['splunk']
   }
 
