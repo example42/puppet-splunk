@@ -366,6 +366,26 @@ class splunk (
     }
   }
 
+  # Setting of files or directories to be monitored
+  if $splunk::monitor_path {
+    exec { 'splunk_add_monitor':
+      command     => "${splunk::basedir}/bin/puppet_add_monitor",
+      refreshonly => true,
+      require     => Exec['splunk_change_admin_password'],
+    }
+
+    file { 'splunk_add_monitor':
+      ensure   => present,
+      path     => "${splunk::basedir}/bin/puppet_add_monitor",
+      mode     => '0700',
+      owner    => $splunk::config_file_owner,
+      group    => $splunk::config_file_group,
+      content  => template('splunk/add_monitor.erb'),
+      require  => Package['splunk'],
+      notify   => Exec['splunk_add_monitor'],
+    }
+  }
+
   # Change of admin password
   exec { 'splunk_change_admin_password':
     command     => "${splunk::basedir}/bin/puppet_change_admin_password",
