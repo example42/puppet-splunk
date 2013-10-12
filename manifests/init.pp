@@ -303,7 +303,7 @@ class splunk (
   if $splunk::install_source != '' {
 
     $install_command = $::operatingsystem ? {
-      /(?i:Debian|Ubuntu|Mint)/            => "wget \'${splunk::install_source}\' -O /tmp/splunk.deb ; dpkg -i /tmp/splunk.deb",
+      /(?i:Debian|Ubuntu|Mint)/                        => "wget \'${splunk::install_source}\' -O /tmp/splunk.deb ; dpkg -i /tmp/splunk.deb",
       /(?i:RedHat|Centos|Scientific|Suse|OracleLinux)/ => "rpm -U ${splunk::install_source}",
     }
 
@@ -543,8 +543,4 @@ class splunk (
     }
   }
 
-  @concat { 'inputs.conf':
-    path => "${splunk::basedir}/etc/system/local/inputs.conf",
-    notify => Service['splunk']
-  }
 }
