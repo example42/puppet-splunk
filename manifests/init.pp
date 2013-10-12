@@ -408,7 +408,7 @@ class splunk (
   if $splunk::template_inputs {
     file { 'splunk_inputs.conf':
       ensure  => $splunk::manage_file,
-      path    => "$splunk::basedir/etc/system/local/inputs.conf",
+      path    => "${splunk::basedir}/etc/system/local/inputs.conf",
       mode    => $splunk::config_file_mode,
       owner   => $splunk::config_file_owner,
       group   => $splunk::config_file_group,
@@ -423,7 +423,7 @@ class splunk (
   if $splunk::template_outputs {
     file { 'splunk_outputs.conf':
       ensure  => $splunk::manage_file,
-      path    => "$splunk::basedir/etc/system/local/outputs.conf",
+      path    => "${splunk::basedir}/etc/system/local/outputs.conf",
       mode    => $splunk::config_file_mode,
       owner   => $splunk::config_file_owner,
       group   => $splunk::config_file_group,
@@ -438,7 +438,7 @@ class splunk (
   if $splunk::template_server {
     file { 'splunk_server.conf':
       ensure  => $splunk::manage_file,
-      path    => "$splunk::basedir/etc/system/local/server.conf",
+      path    => "${splunk::basedir}/etc/system/local/server.conf",
       mode    => $splunk::config_file_mode,
       owner   => $splunk::config_file_owner,
       group   => $splunk::config_file_group,
@@ -453,7 +453,7 @@ class splunk (
   if $splunk::template_web {
     file { 'splunk_web.conf':
       ensure  => $splunk::manage_file,
-      path    => "$splunk::basedir/etc/system/local/web.conf",
+      path    => "${splunk::basedir}/etc/system/local/web.conf",
       mode    => $splunk::config_file_mode,
       owner   => $splunk::config_file_owner,
       group   => $splunk::config_file_group,
