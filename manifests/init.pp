@@ -33,6 +33,11 @@
 #   Either on the central server or the forwarders. May be an array.
 #   Example: [ "/var/log/tomcat6/catalina.out" , "/var/log/apache2" ]
 #
+# [*monitor_sourcetype*]
+#   The source_type for the logs defined in monitor_path
+#   If you need a more granular management of sourcetype for different logs
+#   try splunk::input::monitor
+#
 # [*template_inputs*]
 #   A custom template to use for a custom etc/system/local/inputs.conf file
 #   The value is used in: content => template($template_inputs),
@@ -178,35 +183,36 @@
 #   Alessandro Franceschi <al@lab42.it/>
 #
 class splunk (
-  $install           = params_lookup('install'),
-  $install_source    = params_lookup('install_source'),
-  $admin_password    = params_lookup('admin_password'),
-  $forward_server    = params_lookup('forward_server'),
-  $monitor_path      = params_lookup('monitor_path'),
-  $template_inputs   = params_lookup('template_inputs'),
-  $template_outputs  = params_lookup('template_outputs'),
-  $template_server   = params_lookup('template_server'),
-  $template_web      = params_lookup('template_web'),
-  $my_class          = params_lookup('my_class'),
-  $source_dir        = params_lookup('source_dir'),
-  $source_dir_purge  = params_lookup('source_dir_purge'),
-  $options           = params_lookup('options'),
-  $absent            = params_lookup('absent'),
-  $disable           = params_lookup('disable'),
-  $disableboot       = params_lookup('disableboot'),
-  $monitor           = params_lookup( 'monitor' , 'global' ),
-  $monitor_tool      = params_lookup( 'monitor_tool' , 'global' ),
-  $monitor_target    = params_lookup( 'monitor_target' , 'global' ),
-  $puppi             = params_lookup( 'puppi' , 'global' ),
-  $puppi_helper      = params_lookup( 'puppi_helper' , 'global' ),
-  $firewall          = params_lookup( 'firewall' , 'global' ),
-  $firewall_tool     = params_lookup( 'firewall_tool' , 'global' ),
-  $firewall_src      = params_lookup( 'firewall_src' , 'global' ),
-  $firewall_dst      = params_lookup( 'firewall_dst' , 'global' ),
-  $debug             = params_lookup( 'debug' , 'global' ),
-  $audit_only        = params_lookup( 'audit_only' , 'global' ),
-  $port              = params_lookup('port'),
-  $protocol          = params_lookup('protocol')
+  $install            = params_lookup('install'),
+  $install_source     = params_lookup('install_source'),
+  $admin_password     = params_lookup('admin_password'),
+  $forward_server     = params_lookup('forward_server'),
+  $monitor_path       = params_lookup('monitor_path'),
+  $monitor_sourcetype = params_lookup('monitor_sourcetype'),
+  $template_inputs    = params_lookup('template_inputs'),
+  $template_outputs   = params_lookup('template_outputs'),
+  $template_server    = params_lookup('template_server'),
+  $template_web       = params_lookup('template_web'),
+  $my_class           = params_lookup('my_class'),
+  $source_dir         = params_lookup('source_dir'),
+  $source_dir_purge   = params_lookup('source_dir_purge'),
+  $options            = params_lookup('options'),
+  $absent             = params_lookup('absent'),
+  $disable            = params_lookup('disable'),
+  $disableboot        = params_lookup('disableboot'),
+  $monitor            = params_lookup( 'monitor' , 'global' ),
+  $monitor_tool       = params_lookup( 'monitor_tool' , 'global' ),
+  $monitor_target     = params_lookup( 'monitor_target' , 'global' ),
+  $puppi              = params_lookup( 'puppi' , 'global' ),
+  $puppi_helper       = params_lookup( 'puppi_helper' , 'global' ),
+  $firewall           = params_lookup( 'firewall' , 'global' ),
+  $firewall_tool      = params_lookup( 'firewall_tool' , 'global' ),
+  $firewall_src       = params_lookup( 'firewall_src' , 'global' ),
+  $firewall_dst       = params_lookup( 'firewall_dst' , 'global' ),
+  $debug              = params_lookup( 'debug' , 'global' ),
+  $audit_only         = params_lookup( 'audit_only' , 'global' ),
+  $port               = params_lookup('port'),
+  $protocol           = params_lookup('protocol')
   ) inherits splunk::params {
 
   # Module's internal variables
@@ -295,6 +301,11 @@ class splunk (
   $manage_file_replace = $splunk::bool_audit_only ? {
     true  => false,
     false => true,
+  }
+
+  $real_monitor_sourcetype = $splunk::monitor_sourcetype ? {
+    ''      => '',
+    default => "--source-type ${splunk::monitor_sourcetype}",
   }
 
   ### Managed resources

@@ -24,6 +24,7 @@ class splunk::params {
   $forward_server = ''
 
   $monitor_path = ''
+  $monitor_sourcetype = ''
 
   $template_inputs = ''
 
