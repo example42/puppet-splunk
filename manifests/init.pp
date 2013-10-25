@@ -305,7 +305,7 @@ class splunk (
 
   $real_monitor_sourcetype = $splunk::monitor_sourcetype ? {
     ''      => '',
-    default => "--source-type ${splunk::monitor_sourcetype}",
+    default => "-sourcetype ${splunk::monitor_sourcetype}",
   }
 
   ### Managed resources
