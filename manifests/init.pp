@@ -6,6 +6,9 @@
 # == Parameters
 #
 # Specific class parameters
+# [*license_file_source*]
+#   Optional source for the license file, if provided it's added to Splunk
+#
 # [*install*]
 #   Splunk install type:
 #   - server - For complete installation (seacher, indexer...).
@@ -183,6 +186,7 @@
 #   Alessandro Franceschi <al@lab42.it/>
 #
 class splunk (
+  $license_file_source = params_lookup('license_file_source'),
   $install            = params_lookup('install'),
   $install_source     = params_lookup('install_source'),
   $admin_password     = params_lookup('admin_password'),
@@ -490,6 +494,25 @@ class splunk (
     }
   }
 
+  if $license_file_source {
+    exec { 'splunk_add_license':
+      command     => "${splunk::basedir}/bin/splunk add license /root/splunk.license",
+      refreshonly => true,
+      before      => Service['splunk'],
+    }
+
+    file { 'splunk_license':
+      ensure   => present,
+      path     => '/root/splunk.license',
+      mode     => '0755',
+      owner    => 'root',
+      group    => 'root',
+      source   => $license_file_source,
+      before   => Service['splunk'] ,
+      notify   => Exec['splunk_add_license'],
+    }
+
+  }
 
   ### Include custom class if $my_class is set
   if $splunk::my_class {
