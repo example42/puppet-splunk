@@ -15,6 +15,8 @@ class splunk::params {
 
   ### Application related parameters
 
+  $license_file_source = undef
+
   $install = 'forwarder'
 
   $install_source = ''
