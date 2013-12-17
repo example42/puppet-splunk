@@ -499,7 +499,7 @@ class splunk (
       command     => "${splunk::basedir}/bin/splunk add licenses /root/splunk.license",
       refreshonly => true,
       before      => Service['splunk'],
-      Require     => Exec['splunk_create_service'],
+      require     => Exec['splunk_create_service'],
     }
 
     file { 'splunk_license':
