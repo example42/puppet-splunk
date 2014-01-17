@@ -356,10 +356,18 @@ class splunk (
   }
 
   exec { 'splunk_create_service':
-    command  => "${splunk::basedir}/bin/splunk enable boot-start --accept-license --answer-yes --no-prompt",
+    command  => "${splunk::basedir}/bin/splunk enable boot-start --answer-yes --no-prompt",
     creates  => '/etc/init.d/splunk',
     require  => Package['splunk'],
   }
+
+  # Modify init.d script to accept license
+  exec { 'splunk-accept-license':
+    command => '/bin/sed -i "s/--answer-yes/--accept-license --answer-yes/" /etc/init.d/splunk',
+    require => Exec['splunk_create_service'],
+    before => Service['splunk'],
+  }
+
 
   # Setting of forward_server for forwarders
   if $splunk::forward_server {
