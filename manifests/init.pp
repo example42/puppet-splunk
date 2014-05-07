@@ -356,7 +356,7 @@ class splunk (
   }
 
   exec { 'splunk_create_service':
-    command  => "${splunk::basedir}/bin/splunk enable boot-start --accept-license --answer-yes --no-prompt",
+    command  => "${splunk::basedir}/bin/splunk --accept-license enable boot-start --answer-yes --no-prompt",
     creates  => '/etc/init.d/splunk',
     require  => Package['splunk'],
   }
