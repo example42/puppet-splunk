@@ -323,14 +323,14 @@ class splunk (
     }
 
     exec { 'splunk_manage_package':
-      command     => '/root/puppet_manage_package',
+      command     => "${splunk::basedir}/puppet_manage_package",
       refreshonly => true,
       before      => Package['splunk'],
     }
 
     file { 'splunk_manage_package':
       ensure   => present,
-      path     => '/root/puppet_manage_package',
+      path     => "${splunk::basedir}/puppet_manage_package",
       mode     => '0700',
       owner    => 'root',
       group    => 'root',
@@ -339,6 +339,9 @@ class splunk (
       notify   => Exec['splunk_manage_package'],
     }
 
+    file { $splunk::basedir:
+      ensure => directory
+    }
   }
 
   package { 'splunk':
