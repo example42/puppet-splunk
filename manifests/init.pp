@@ -332,8 +332,6 @@ class splunk (
       ensure   => present,
       path     => "${splunk::basedir}/puppet_manage_package",
       mode     => '0700',
-      owner    => 'root',
-      group    => 'root',
       content  => template('splunk/manage_package.erb'),
       before   => Package['splunk'] ,
       notify   => Exec['splunk_manage_package'],
