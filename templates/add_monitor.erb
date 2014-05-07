@@ -8,6 +8,6 @@ done
 
 # Adding paths
 <% @monitor_path.each do |mon| -%>
-<%= scope.lookupvar('splunk::basedir') %>/bin/splunk add monitor <%= mon %> --accept-license --answer-yes --no-prompt -auth admin:<%= scope.lookupvar('splunk::admin_password') %> <%= scope.lookupvar('splunk::real_monitor_sourcetype') %>
+<%= scope.lookupvar('splunk::basedir') %>/bin/splunk add monitor '<%= mon %>' --accept-license --answer-yes --no-prompt -auth admin:<%= scope.lookupvar('splunk::admin_password') %> <%= scope.lookupvar('splunk::real_monitor_sourcetype') %>
 <% end -%>
 
