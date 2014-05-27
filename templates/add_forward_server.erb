@@ -8,7 +8,7 @@ if [ -z "$HOME" ]; then
 fi
 
 # Adding forward servers
-<% @forward_server.each do |fs| -%>
+<% Array(@forward_server).each do |fs| -%>
 <%= scope.lookupvar('splunk::basedir') %>/bin/splunk add forward-server <%= fs %> --accept-license --answer-yes --auto-ports --no-prompt -auth admin:<%= scope.lookupvar('splunk::admin_password') %>
 <% end -%>
 
