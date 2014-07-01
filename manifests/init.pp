@@ -242,8 +242,8 @@ class splunk (
   $process_args = ''
   $config_dir = "${splunk::basedir}/etc/"
   $config_file_mode = '0644'
-  $config_file_owner = 'splunk'
-  $config_file_group = 'splunk'
+  $config_file_owner = 'root'
+  $config_file_group = 'root'
   $pid_file = "${splunk::basedir}/var/run/splunk/splunkd.pid"
   $data_dir = "${splunk::basedir}/var/lib/splunk"
   $log_dir = "${splunk::basedir}/var/log/splunk"
