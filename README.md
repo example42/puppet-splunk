@@ -26,7 +26,7 @@ To install Universal Forwarder via yum/apt:
 
         class { "splunk":
           install        => "forwarder", # This is the default, can be omitted 
-          forward_server => "splunk.example42.com:9997", # Use host:port format
+          forward_server => [ "splunk.example42.com:9997", ], # Must be an array; use host:port format
         }
 
 To install the Splunk server form a custom url
@@ -43,7 +43,7 @@ local files to forward:
         class { "splunk":
           # install        => "forwarder", # This is the default, can be omitted 
           install_source => "http://files.example42.com/splunkforwarder-4.3-115073-linux-2.6-amd64.deb",
-          forward_server => "splunk.example42.com:9997", # Use host:port format
+          forward_server => [ "splunk.example42.com:9997", ], # Must be an array; use host:port format
           monitor_path   => [ "/var/log/tomcat6/catalina.out" , "/var/log/apache2/" ],
           admin_password => "!what4wONDErFu!P4ssw0rd",
         }
@@ -52,13 +52,13 @@ The variables used in the module can be passed in 2 ways:
 
 * With the old style "Set variables and include class" pattern:
 
-        $splunk_forward_server = "splunk.example42.com:9997",
+        $splunk_forward_server = [ "splunk.example42.com:9997", ],
         include splunk
 
 * As a parametrized class:
 
         class { "splunk":
-          forward_server => "splunk.example42.com:9997",
+          forward_server => [ "splunk.example42.com:9997", ],
         }
 
 You can even, under some degrees, mix these two patterns.
@@ -69,13 +69,13 @@ You can for example set general top scope variables that affect all your paramet
         $monitor = true
         $monitor_tool = [ "nagios" , "munin" , "puppi" ]
         class { "splunk":
-          forward_server => "splunk.example42.com:9997",
+          forward_server => [ "splunk.example42.com:9997", ],
         }
         
 The above example has the same effect of:
 
         class { "splunk":
-          forward_server => "splunk.example42.com:9997",
+          forward_server => [ "splunk.example42.com:9997", ],
           puppi          => true,
           monitor        => true,
           monitor_tool   => [ "nagios" , "munin" , "puppi" ],
