@@ -319,37 +319,61 @@ class splunk (
 
   ### Managed resources
 
-  # If install_source is defined installation is done retriving directly the defined source
+  # If install_source is defined installation is done by directly retrieving
+  # the defined source.  The package will be retrieved via wget and stored
+  # locally.  We then have the Puppet package provider using dpkg or rpm,
+  # depending on the OS.  This is more idempotent than the old way of writing a
+  # script and only installing the package if the script changes.
+
   if $splunk::install_source != '' {
-
-    $install_command = $::operatingsystem ? {
-      /(?i:Debian|Ubuntu|Mint)/                               => "wget \'${splunk::install_source}\' -O /tmp/puppet-splunk.deb ; dpkg -i /tmp/puppet-splunk.deb ; rm -f /tmp/puppet-splunk.deb",
-      /(?i:RedHat|Centos|Scientific|Suse|OracleLinux|Amazon)/ => "rpm -U ${splunk::install_source}",
-    }
-
-    exec { 'splunk_manage_package':
-      command     => "${splunk::basedir}/puppet_manage_package",
-      refreshonly => true,
-      before      => Package['splunk'],
-    }
-
-    file { 'splunk_manage_package':
-      ensure   => present,
-      path     => "${splunk::basedir}/puppet_manage_package",
-      mode     => '0700',
-      content  => template('splunk/manage_package.erb'),
-      before   => Package['splunk'] ,
-      notify   => Exec['splunk_manage_package'],
+    case $::operatingsystem {
+      /(?i:Debian|Ubuntu|Mint)/: {
+        $package_filename = 'puppet-splunk.deb'
+        $package_provider = 'dpkg'
+      }
+      /(?i:RedHat|Centos|Scientific|Suse|OracleLinux|Amazon)/: {
+        $package_filename = 'puppet-splunk.rpm'
+        $package_provider = 'rpm'
+      }
+      default: {
+        fail("The ${::operatingsystem} operating system isn't supported with remote install source")
+      }
     }
 
     file { $splunk::basedir:
-      ensure => directory
+      ensure => 'directory',
     }
-  }
 
-  package { 'splunk':
-    ensure => $splunk::manage_package,
-    name   => $splunk::package,
+    file { "${splunk::basedir}/${package_provider}":
+      ensure => 'directory',
+      owner  => 'root',
+      group  => 'root',
+      mode   => '0755',
+      before => Exec['splunk_get_package'],
+    }
+
+    exec { 'splunk_get_package':
+      command => "wget \'${splunk::install_source}' -O ${splunk::basedir}/${package_provider}/${package_filename}",
+      creates => "${splunk::basedir}/${package_provider}/${package_filename}",
+      before  => Package['splunk'],
+    }
+
+    package { 'splunk':
+      ensure   => $splunk::manage_package,
+      name     => $splunk::package,
+      source   => "${splunk::basedir}/${package_provider}/${package_filename}",
+      provider => $package_provider,
+    }
+
+    # This is to clean up the old script for installing the packages.
+    file { "${splunk::basedir}/puppet_manage_package":
+      ensure => absent,
+    }
+  } else {
+    package { 'splunk':
+      ensure => $splunk::manage_package,
+      name   => $splunk::package,
+    }
   }
 
   service { 'splunk':
@@ -358,13 +382,17 @@ class splunk (
     enable     => $splunk::manage_service_enable,
     hasstatus  => $splunk::service_status,
     pattern    => $splunk::process,
-    require    => Exec['splunk_create_service'],
+    require    => Exec['splunk_first_time_run'],
   }
 
-  exec { 'splunk_create_service':
-    command  => "${splunk::basedir}/bin/splunk --accept-license enable boot-start --answer-yes --no-prompt",
-    creates  => '/etc/init.d/splunk',
-    require  => Package['splunk'],
+  # When the package is installed or upgraded the first time run flag is set by
+  # creating a file named 'ftr'.  If this file exists, then we enable the boot
+  # service again, accept the license and run any migration scripts that are
+  # needed all in one shot.
+  exec { 'splunk_first_time_run':
+    command   => "${splunk::basedir}/bin/splunk --accept-license enable boot-start --answer-yes --no-prompt",
+    require   => Package['splunk'],
+    onlyif    => "test -f ${splunk::basedir}/ftr",
   }
 
   # Setting of forward_server for forwarders
@@ -519,7 +547,7 @@ class splunk (
       command     => "${splunk::basedir}/bin/splunk add licenses /root/splunk.license",
       refreshonly => true,
       before      => Service['splunk'],
-      require     => Exec['splunk_create_service'],
+      require     => Exec['splunk_first_time_run'],
     }
 
     file { 'splunk_license':
