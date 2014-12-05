@@ -13,7 +13,8 @@ define splunk::input::tcp ( $port,
   $requireHeader        = undef,
   $listenOnIPv6         = undef,
   $acceptFrom           = undef,
-  $rawTcpDoneTimeout    = undef
+  $rawTcpDoneTimeout    = undef,
+  $disabled             = undef
 ) {
   include splunk
 

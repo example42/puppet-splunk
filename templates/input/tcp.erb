@@ -1,4 +1,5 @@
 [tcp://<%= $remote_server %>:<%= $port %>]
+<% if @disabled %>disabled=<%= @disabled %>
 <% if @host %>  host=<%= @host %>
 <% end %><% if @index %>    index=<%= @index %>
 <% end %><% if @source %>   source=<%= @source %>
