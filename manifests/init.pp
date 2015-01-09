@@ -176,6 +176,10 @@
 #   This is used by monitor, firewall and puppi (optional) components
 #   Can be defined also by the (top scope) variable $splunk_protocol
 #
+# [*version*]
+#   The splunk package full version to install
+#   This allows for package upgrade/downgrade based on version
+#   Example "6.2.1-245427"
 #
 # == Examples
 #
@@ -222,6 +226,7 @@ class splunk (
   $audit_only         = params_lookup( 'audit_only' , 'global' ),
   $port               = params_lookup('port'),
   $protocol           = params_lookup('protocol')
+  $version            = params_lookup('version')
   ) inherits splunk::params {
 
   # Module's internal variables
@@ -262,7 +267,7 @@ class splunk (
 
   $manage_package = $splunk::bool_absent ? {
     true  => 'absent',
-    false => 'present',
+    false => 'latest',
   }
 
   $manage_service_enable = $splunk::bool_disableboot ? {
@@ -328,7 +333,7 @@ class splunk (
   if $splunk::install_source != '' {
     case $::operatingsystem {
       /(?i:Debian|Ubuntu|Mint)/: {
-        $package_filename = 'puppet-splunk.deb'
+        $package_filename = "puppet-splunk-${splunk::version}.deb"
         $package_provider = 'dpkg'
       }
       /(?i:RedHat|Centos|Scientific|Suse|OracleLinux|Amazon)/: {
