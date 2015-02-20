@@ -29,7 +29,7 @@ To install Universal Forwarder via yum/apt:
           forward_server => [ "splunk.example42.com:9997", ], # Must be an array; use host:port format
         }
 
-To install the Splunk server form a custom url
+To install the Splunk server from a custom url
 
         class { "splunk":
           install        => "server",
