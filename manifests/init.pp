@@ -334,12 +334,12 @@ class splunk (
     }
 
     file { 'splunk_manage_package':
-      ensure   => present,
-      path     => "${splunk::basedir}/puppet_manage_package",
-      mode     => '0700',
-      content  => template('splunk/manage_package.erb'),
-      before   => Package['splunk'] ,
-      notify   => Exec['splunk_manage_package'],
+      ensure  => present,
+      path    => "${splunk::basedir}/puppet_manage_package",
+      mode    => '0700',
+      content => template('splunk/manage_package.erb'),
+      before  => Package['splunk'] ,
+      notify  => Exec['splunk_manage_package'],
     }
 
     file { $splunk::basedir:
@@ -353,18 +353,18 @@ class splunk (
   }
 
   service { 'splunk':
-    ensure     => $splunk::manage_service_ensure,
-    name       => $splunk::service,
-    enable     => $splunk::manage_service_enable,
-    hasstatus  => $splunk::service_status,
-    pattern    => $splunk::process,
-    require    => Exec['splunk_create_service'],
+    ensure    => $splunk::manage_service_ensure,
+    name      => $splunk::service,
+    enable    => $splunk::manage_service_enable,
+    hasstatus => $splunk::service_status,
+    pattern   => $splunk::process,
+    require   => Exec['splunk_create_service'],
   }
 
   exec { 'splunk_create_service':
-    command  => "${splunk::basedir}/bin/splunk --accept-license enable boot-start --answer-yes --no-prompt",
-    creates  => '/etc/init.d/splunk',
-    require  => Package['splunk'],
+    command => "${splunk::basedir}/bin/splunk --accept-license enable boot-start --answer-yes --no-prompt",
+    creates => '/etc/init.d/splunk',
+    require => Package['splunk'],
   }
 
   # Setting of forward_server for forwarders
@@ -376,14 +376,14 @@ class splunk (
     }
 
     file { 'splunk_add_forward_server':
-      ensure   => present,
-      path     => "${splunk::basedir}/bin/puppet_add_forward_server",
-      mode     => '0700',
-      owner    => $splunk::config_file_owner,
-      group    => $splunk::config_file_group,
-      content  => template('splunk/add_forward_server.erb'),
-      require  => Package['splunk'],
-      notify   => Exec['splunk_add_forward_server'],
+      ensure  => present,
+      path    => "${splunk::basedir}/bin/puppet_add_forward_server",
+      mode    => '0700',
+      owner   => $splunk::config_file_owner,
+      group   => $splunk::config_file_group,
+      content => template('splunk/add_forward_server.erb'),
+      require => Package['splunk'],
+      notify  => Exec['splunk_add_forward_server'],
     }
   }
 
@@ -410,14 +410,14 @@ class splunk (
     }
 
     file { 'splunk_add_monitor':
-      ensure   => present,
-      path     => "${splunk::basedir}/bin/puppet_add_monitor",
-      mode     => '0700',
-      owner    => $splunk::config_file_owner,
-      group    => $splunk::config_file_group,
-      content  => template('splunk/add_monitor.erb'),
-      require  => Package['splunk'],
-      notify   => Exec['splunk_add_monitor'],
+      ensure  => present,
+      path    => "${splunk::basedir}/bin/puppet_add_monitor",
+      mode    => '0700',
+      owner   => $splunk::config_file_owner,
+      group   => $splunk::config_file_group,
+      content => template('splunk/add_monitor.erb'),
+      require => Package['splunk'],
+      notify  => Exec['splunk_add_monitor'],
     }
   }
 
@@ -523,14 +523,14 @@ class splunk (
     }
 
     file { 'splunk_license':
-      ensure   => present,
-      path     => '/root/splunk.license',
-      mode     => '0755',
-      owner    => 'root',
-      group    => 'root',
-      source   => $license_file_source,
-      before   => Service['splunk'] ,
-      notify   => Exec['splunk_add_license'],
+      ensure => present,
+      path   => '/root/splunk.license',
+      mode   => '0755',
+      owner  => 'root',
+      group  => 'root',
+      source => $license_file_source,
+      before => Service['splunk'] ,
+      notify => Exec['splunk_add_license'],
     }
 
   }
@@ -562,11 +562,11 @@ class splunk (
       enable   => $splunk::manage_monitor,
     }
     monitor::process { 'splunk_process':
-      process  => $splunk::process,
-      service  => $splunk::service,
-      pidfile  => $splunk::pid_file,
-      tool     => $splunk::monitor_tool,
-      enable   => $splunk::manage_monitor,
+      process => $splunk::process,
+      service => $splunk::service,
+      pidfile => $splunk::pid_file,
+      tool    => $splunk::monitor_tool,
+      enable  => $splunk::manage_monitor,
     }
   }
 
