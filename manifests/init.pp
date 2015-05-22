@@ -473,7 +473,7 @@ class splunk (
   }
 
   # Local configuration files for which a template can be provided
-  if $splunk::template_inputs {
+  if $splunk::template_inputs and $splunk::template_inputs != '' {
     file { 'splunk_inputs.conf':
       ensure  => $splunk::manage_file,
       path    => "${splunk::basedir}/etc/system/local/inputs.conf",
@@ -488,7 +488,7 @@ class splunk (
     }
   }
 
-  if $splunk::template_outputs {
+  if $splunk::template_outputs and $splunk::template_outputs != '' {
     file { 'splunk_outputs.conf':
       ensure  => $splunk::manage_file,
       path    => "${splunk::basedir}/etc/system/local/outputs.conf",
@@ -503,7 +503,7 @@ class splunk (
     }
   }
 
-  if $splunk::template_server {
+  if $splunk::template_server and $splunk::template_server != '' {
     file { 'splunk_server.conf':
       ensure  => $splunk::manage_file,
       path    => "${splunk::basedir}/etc/system/local/server.conf",
@@ -518,7 +518,7 @@ class splunk (
     }
   }
 
-  if $splunk::template_web {
+  if $splunk::template_web and $splunk::template_web != '' {
     file { 'splunk_web.conf':
       ensure  => $splunk::manage_file,
       path    => "${splunk::basedir}/etc/system/local/web.conf",
