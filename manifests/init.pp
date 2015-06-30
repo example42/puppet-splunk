@@ -358,7 +358,7 @@ class splunk (
     }
 
     exec { 'splunk_get_package':
-      command => "wget \'${splunk::install_source}' -O ${splunk::basedir}/${package_provider}/${package_filename}",
+      command => "/usr/bin/wget \'${splunk::install_source}' -O ${splunk::basedir}/${package_provider}/${package_filename}",
       creates => "${splunk::basedir}/${package_provider}/${package_filename}",
       before  => Package['splunk'],
     }
@@ -397,7 +397,7 @@ class splunk (
   exec { 'splunk_first_time_run':
     command   => "${splunk::basedir}/bin/splunk --accept-license enable boot-start --answer-yes --no-prompt",
     require   => Package['splunk'],
-    onlyif    => "test -f ${splunk::basedir}/ftr",
+    onlyif    => "/usr/bin/test -f ${splunk::basedir}/ftr",
   }
 
   # Setting of forward_server for forwarders
