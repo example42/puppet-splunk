@@ -7,7 +7,7 @@ describe 'splunk' do
   let(:facts) { { :ipaddress => '10.42.42.42' } }
 
   describe 'Test standard installation' do
-    it { should contain_package('splunk').with_ensure('present') }
+    it { should contain_package('splunk').with_ensure('latest') }
     it { should contain_service('splunk').with_ensure('running') }
     it { should contain_service('splunk').with_enable('true') }
   end
@@ -15,7 +15,7 @@ describe 'splunk' do
   describe 'Test standard installation with monitoring and firewalling' do
     let(:params) { {:monitor => true , :firewall => true, :port => '42' } }
 
-    it { should contain_package('splunk').with_ensure('present') }
+    it { should contain_package('splunk').with_ensure('latest') }
     it { should contain_service('splunk').with_ensure('running') }
     it { should contain_service('splunk').with_enable('true') }
     it 'should monitor the process' do
@@ -47,7 +47,7 @@ describe 'splunk' do
   describe 'Test decommissioning - disable' do
     let(:params) { {:disable => true, :monitor => true , :firewall => true, :port => '42'} }
 
-    it { should contain_package('splunk').with_ensure('present') }
+    it { should contain_package('splunk').with_ensure('latest') }
     it 'should stop Service[splunk]' do should contain_service('splunk').with_ensure('stopped') end
     it 'should not enable at boot Service[splunk]' do should contain_service('splunk').with_enable('false') end
     it 'should not monitor the process' do
@@ -63,8 +63,8 @@ describe 'splunk' do
   describe 'Test decommissioning - disableboot' do
     let(:params) { {:disableboot => true, :monitor => true , :firewall => true, :port => '42'} }
   
-    it { should contain_package('splunk').with_ensure('present') }
-    it { should_not contain_service('splunk').with_ensure('present') }
+    it { should contain_package('splunk').with_ensure('latest') }
+    it { should_not contain_service('splunk').with_ensure('latest') }
     it { should_not contain_service('splunk').with_ensure('absent') }
     it 'should not enable at boot Service[splunk]' do should contain_service('splunk').with_enable('false') end
     it 'should not monitor the process locally' do
