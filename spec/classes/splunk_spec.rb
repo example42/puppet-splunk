@@ -29,11 +29,18 @@ describe 'splunk' do
   end
 
   describe 'Test decommissioning - absent' do
-    let(:params) { {:absent => true, :monitor => true , :firewall => true, :port => '42'} }
+    let(:params) { {:absent => true, :monitor => true , :firewall => true, :port => '42', 
+      :forward_server => '127.0.0.1', :deployment_server => '127.0.0.1', :monitor_path => '/dir/file' } }
 
     it 'should remove Package[splunk]' do should contain_package('splunk').with_ensure('absent') end 
     it 'should stop Service[splunk]' do should contain_service('splunk').with_ensure('stopped') end
     it 'should not enable at boot Service[splunk]' do should contain_service('splunk').with_enable('false') end
+    it 'should not have directory dependencies left' do
+      should contain_file('splunk_add_forward_server').with_ensure('absent')
+      should contain_file('splunk_deployment_server').with_ensure('absent')
+      should contain_file('splunk_add_monitor').with_ensure('absent')
+      should contain_file('splunk_change_admin_password').with_ensure('absent')
+    end
     it 'should not monitor the process' do
       content = catalogue.resource('monitor::process', 'splunk_process').send(:parameters)[:enable]
       content.should == false

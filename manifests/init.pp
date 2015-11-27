@@ -345,8 +345,10 @@ class splunk (
       }
     }
 
-    file { $splunk::basedir:
+    file { [ $splunk::basedir, "${splunk::basedir}/bin"]:
       ensure => 'directory',
+      owner  => $splunk::config_file_owner,
+      group  => $splunk::config_file_group,
     }
 
     file { "${splunk::basedir}/${package_provider}":
@@ -409,7 +411,7 @@ class splunk (
     }
 
     file { 'splunk_add_forward_server':
-      ensure  => present,
+      ensure  => $splunk::manage_file,
       path    => "${splunk::basedir}/bin/puppet_add_forward_server",
       mode    => '0700',
       owner   => $splunk::config_file_owner,
@@ -423,7 +425,7 @@ class splunk (
   # Setting of deployment server
   if $splunk::deployment_server {
     file { 'splunk_deployment_server' :
-      ensure  => present,
+      ensure  => $splunk::manage_file,
       path    => "${splunk::basedir}/etc/system/local/deploymentclient.conf",
       mode    => '0700',
       owner   => $splunk::config_file_owner,
@@ -443,7 +445,7 @@ class splunk (
     }
 
     file { 'splunk_add_monitor':
-      ensure  => present,
+      ensure  => $splunk::manage_file,
       path    => "${splunk::basedir}/bin/puppet_add_monitor",
       mode    => '0700',
       owner   => $splunk::config_file_owner,
@@ -462,7 +464,7 @@ class splunk (
   }
 
   file { 'splunk_change_admin_password':
-    ensure  => present,
+    ensure  => $splunk::manage_file,
     path    => "${splunk::basedir}/bin/puppet_change_admin_password",
     mode    => '0700',
     owner   => $splunk::config_file_owner,
