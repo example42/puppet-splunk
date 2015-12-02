@@ -7,7 +7,7 @@ describe 'splunk' do
   let(:facts) { { :ipaddress => '10.42.42.42' } }
 
   describe 'Test standard installation' do
-    it { should contain_package('splunk').with_ensure('present') }
+    it { should contain_package('splunk').with_ensure('latest') }
     it { should contain_service('splunk').with_ensure('running') }
     it { should contain_service('splunk').with_enable('true') }
   end
@@ -15,7 +15,7 @@ describe 'splunk' do
   describe 'Test standard installation with monitoring and firewalling' do
     let(:params) { {:monitor => true , :firewall => true, :port => '42' } }
 
-    it { should contain_package('splunk').with_ensure('present') }
+    it { should contain_package('splunk').with_ensure('latest') }
     it { should contain_service('splunk').with_ensure('running') }
     it { should contain_service('splunk').with_enable('true') }
     it 'should monitor the process' do
@@ -29,11 +29,18 @@ describe 'splunk' do
   end
 
   describe 'Test decommissioning - absent' do
-    let(:params) { {:absent => true, :monitor => true , :firewall => true, :port => '42'} }
+    let(:params) { {:absent => true, :monitor => true , :firewall => true, :port => '42', 
+      :forward_server => '127.0.0.1', :deployment_server => '127.0.0.1', :monitor_path => '/dir/file' } }
 
     it 'should remove Package[splunk]' do should contain_package('splunk').with_ensure('absent') end 
     it 'should stop Service[splunk]' do should contain_service('splunk').with_ensure('stopped') end
     it 'should not enable at boot Service[splunk]' do should contain_service('splunk').with_enable('false') end
+    it 'should not have directory dependencies left' do
+      should contain_file('splunk_add_forward_server').with_ensure('absent')
+      should contain_file('splunk_deployment_server').with_ensure('absent')
+      should contain_file('splunk_add_monitor').with_ensure('absent')
+      should contain_file('splunk_change_admin_password').with_ensure('absent')
+    end
     it 'should not monitor the process' do
       content = catalogue.resource('monitor::process', 'splunk_process').send(:parameters)[:enable]
       content.should == false
@@ -47,7 +54,7 @@ describe 'splunk' do
   describe 'Test decommissioning - disable' do
     let(:params) { {:disable => true, :monitor => true , :firewall => true, :port => '42'} }
 
-    it { should contain_package('splunk').with_ensure('present') }
+    it { should contain_package('splunk').with_ensure('latest') }
     it 'should stop Service[splunk]' do should contain_service('splunk').with_ensure('stopped') end
     it 'should not enable at boot Service[splunk]' do should contain_service('splunk').with_enable('false') end
     it 'should not monitor the process' do
@@ -63,8 +70,8 @@ describe 'splunk' do
   describe 'Test decommissioning - disableboot' do
     let(:params) { {:disableboot => true, :monitor => true , :firewall => true, :port => '42'} }
   
-    it { should contain_package('splunk').with_ensure('present') }
-    it { should_not contain_service('splunk').with_ensure('present') }
+    it { should contain_package('splunk').with_ensure('latest') }
+    it { should_not contain_service('splunk').with_ensure('latest') }
     it { should_not contain_service('splunk').with_ensure('absent') }
     it 'should not enable at boot Service[splunk]' do should contain_service('splunk').with_enable('false') end
     it 'should not monitor the process locally' do

@@ -1,8 +1,10 @@
+.bundle/
 /.gradle
 /metadata.json
 /.rvmrc
 build
 pkg/
+vendor/
 Session.vim
 spec/fixtures
 .*.sw[a-z]
