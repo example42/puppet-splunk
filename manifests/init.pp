@@ -352,7 +352,7 @@ class splunk (
     }
 
     file { "${splunk::basedir}/${package_provider}":
-      ensure => 'directory',
+      ensure => $manage_file,
       owner  => 'root',
       group  => 'root',
       mode   => '0755',
