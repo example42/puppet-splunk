@@ -558,9 +558,9 @@ class splunk (
     }
 
     file { 'splunk_license':
-      ensure => present,
+      ensure => $splunk::manage_file,
       path   => '/root/splunk.license',
-      mode   => '0755',
+      mode   => '0750',
       owner  => 'root',
       group  => 'root',
       source => $license_file_source,
