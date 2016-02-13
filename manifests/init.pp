@@ -427,7 +427,7 @@ class splunk (
     file { 'splunk_deployment_server' :
       ensure  => $splunk::manage_file,
       path    => "${splunk::basedir}/etc/system/local/deploymentclient.conf",
-      mode    => '0700',
+      mode    => $splunk::config_file_mode,
       owner   => $splunk::config_file_owner,
       group   => $splunk::config_file_group,
       content => template('splunk/deploymentclient.erb'),
