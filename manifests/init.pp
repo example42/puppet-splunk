@@ -299,6 +299,12 @@ class splunk (
     default => 'directory',
   }
 
+  if ($splunk::deployment_server and ! $splunk::bool_absent) {
+    $manage_deployment_file = 'present'
+  } else {
+    $manage_deployment_file = 'absent'
+  }
+
   # If $splunk::disable == true we dont check splunk on the local system
   if $splunk::bool_absent == true or $splunk::bool_disable == true or $splunk::bool_disableboot == true {
     $manage_monitor = false
@@ -428,17 +434,15 @@ class splunk (
   }
 
   # Setting of deployment server
-  if $splunk::deployment_server {
-    file { 'splunk_deployment_server' :
-      ensure  => $splunk::manage_file,
-      path    => "${splunk::basedir}/etc/system/local/deploymentclient.conf",
-      mode    => $splunk::config_file_mode,
-      owner   => $splunk::config_file_owner,
-      group   => $splunk::config_file_group,
-      content => template('splunk/deploymentclient.erb'),
-      require => Package['splunk'],
-      notify  => Service['splunk'],
-    }
+  file { 'splunk_deployment_server' :
+    ensure  => $splunk::manage_deployment_file,
+    path    => "${splunk::basedir}/etc/system/local/deploymentclient.conf",
+    mode    => $splunk::config_file_mode,
+    owner   => $splunk::config_file_owner,
+    group   => $splunk::config_file_group,
+    content => template('splunk/deploymentclient.erb'),
+    require => Package['splunk'],
+    notify  => Service['splunk'],
   }
 
   # Setting of files or directories to be monitored
