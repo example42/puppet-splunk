@@ -28,6 +28,13 @@ describe 'splunk' do
     end
   end
 
+  describe 'Test splunk installation with 2 forward servers' do
+    let(:params) { {:forward_server => [ "splunk1.example42.com:9997" , "splunk2.example42.com:9997"] } }
+    it { should contain_exec('splunk_add_forward_server') }
+    it { should contain_file('splunk_add_forward_server').with_content(/splunk add forward-server splunk1.example42.com:9997 --accept-license --answer-yes --auto-ports --no-prompt -auth admin:changeme/) }
+    it { should contain_file('splunk_add_forward_server').with_content(/splunk add forward-server splunk2.example42.com:9997 --accept-license --answer-yes --auto-ports --no-prompt -auth admin:changeme/) }
+  end
+
   describe 'Test decommissioning - absent' do
     let(:params) { {:absent => true, :monitor => true , :firewall => true, :port => '42', 
       :forward_server => '127.0.0.1', :deployment_server => '127.0.0.1', :monitor_path => '/dir/file' } }
