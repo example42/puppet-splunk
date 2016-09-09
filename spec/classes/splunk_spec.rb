@@ -28,6 +28,23 @@ describe 'splunk' do
     end
   end
 
+  describe 'Test splunk installation with 2 forward servers' do
+    let(:params) { {:forward_server => [ "splunk1.example42.com:9997" , "splunk2.example42.com:9997"] } }
+    it { should contain_exec('splunk_add_forward_server') }
+    it { should contain_file('splunk_add_forward_server').with_content(/splunk add forward-server splunk1.example42.com:9997 --accept-license --answer-yes --auto-ports --no-prompt -auth admin:changeme/) }
+    it { should contain_file('splunk_add_forward_server').with_content(/splunk add forward-server splunk2.example42.com:9997 --accept-license --answer-yes --auto-ports --no-prompt -auth admin:changeme/) }
+  end
+
+  describe 'Test splunk installation with deployment server' do
+    let(:params) { {:deployment_server => "splunk1.example42.com:8098" } }
+    it { should contain_file('splunk_deployment_server').with_ensure('present') }
+    it { should contain_file('splunk_deployment_server').with_content(/\[deployment-client\]\n\n\[target-broker:deploymentServer\]\ntargetUri = splunk1.example42.com:8098/) }
+  end
+
+  describe 'Test splunk installation without deployment server' do
+    it { should contain_file('splunk_deployment_server').with_ensure('absent') }
+  end
+
   describe 'Test decommissioning - absent' do
     let(:params) { {:absent => true, :monitor => true , :firewall => true, :port => '42', 
       :forward_server => '127.0.0.1', :deployment_server => '127.0.0.1', :monitor_path => '/dir/file' } }
