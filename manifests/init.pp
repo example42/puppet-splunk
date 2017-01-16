@@ -363,7 +363,7 @@ class splunk (
     }
 
     file { "${splunk::basedir}/${package_provider}":
-      ensure => $splunk::manage_file,
+      ensure => $splunk::manage_directory,
       owner  => $splunk::config_file_owner,
       group  => $splunk::config_file_group,
       mode   => '0755',
